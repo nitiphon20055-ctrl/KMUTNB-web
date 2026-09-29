@@ -1,0 +1,279 @@
+<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>แบบทดสอบจำลองสอบตรง มจพ.</title><style>body{margin:0;font-family:system-ui,sans-serif;background:#f4f6f8;color:#17202a}.wrap{max-width:900px;margin:auto;padding:20px}.card{background:white;border-radius:16px;padding:20px;margin:14px 0;box-shadow:0 3px 14px #0001}.q{margin:18px 0;padding:16px;border:1px solid #ddd;border-radius:12px}label{display:block;padding:9px;border-radius:8px}label:hover{background:#f1f5f9}button{padding:13px 20px;border:0;border-radius:10px;background:#2563eb;color:#fff;font-size:16px;cursor:pointer}.result{position:sticky;top:0;background:#fff;padding:14px;border-radius:12px;margin-bottom:12px;display:none}small{color:#667085}.correct{background:#dcfce7}.wrong{background:#fee2e2}.explain{margin-top:12px;padding:12px;border-left:4px solid #2563eb;background:#eff6ff;border-radius:8px;line-height:1.6}label{cursor:pointer}@media(max-width:600px){.wrap{padding:10px}.card{padding:14px}.q{padding:13px}label{padding:12px 8px}button{width:100%;position:sticky;bottom:10px;z-index:5}}</style></head><body><div class="wrap"><div class="card"><h1>📝 แบบทดสอบจำลองสอบตรง มจพ.</h1><p>เลือกคำตอบให้ครบ แล้วกด <b>ส่งคำตอบ</b> เพื่อดูคะแนนและเฉลยพร้อมกัน</p><small>รวม 90 ข้อ • คณิตศาสตร์ 15 • วิทยาศาสตร์/ฟิสิกส์ 25 • ภาษาอังกฤษ 50</small></div><div id="result" class="result"></div><form id="quiz"></form><button onclick="submitQuiz()" type="button">ส่งคำตอบและดูเฉลย</button></div><script>
+const sections=[
+['📐 คณิตศาสตร์',['A','A','C','B','B','A','C','A','C','C','B','B','C','C','C']],
+['🧪 วิทยาศาสตร์ / ฟิสิกส์',['C','B','C','C','A','B','B','C','A','B','C','A','B','C','A','A','B','B','A','B','C','C','A','A','D']],
+['🇬🇧 ภาษาอังกฤษ',['D','B','C','C','A','B','C','B','A','B','C','B','C','A','B','B','A','B','B','C','B','B','A','C','B','B','C','A','B','C','C','D','B','C','B','C','A','C','B','B','B','C','B','B','B','B','D','C','B','B']]
+];
+
+const questions=[
+['กำหนดให้ f(x) = x² - 4x + 3 ค่าต่ำสุดของฟังก์ชันนี้คือเท่าใด',['-1','0','1','3']],
+['ถ้า A = [[1,2],[3,4]] ค่าของ det(A) คือเท่าใด',['-2','2','-10','10']],
+['จงหาค่าของ lim x→2 (x²-4)/(x-2)',['0','2','4','หาค่าไม่ได้']],
+['ผลบวกของอนุกรม 1 + 3 + 5 + ... + 19 มีค่าเท่าใด',['90','100','110','120']],
+['log₂(x)=3 ค่าของ x คือเท่าใด',['6','8','9','16']],
+['เมทริกซ์เอกลักษณ์ 2×2 คือข้อใด',['[[1,0],[0,1]]','[[0,1],[1,0]]','[[1,1],[1,1]]','[[0,0],[0,0]]']],
+['ความชันผ่าน (1,2) และ (3,y) เท่ากับ 3 ค่าของ y คือเท่าใด',['6','7','8','9']],
+['อนุพันธ์ของ f(x)=3x³-5x คือข้อใด',['9x²-5','3x²-5','9x²+5','6x²-5']],
+['sin30° + cos60° เท่ากับเท่าใด',['0','0.5','1','√3']],
+['A={1,2,3}, B={3,4,5} จำนวนสมาชิก A∪B เท่ากับเท่าใด',['3','4','5','6']],
+['ห.ร.ม. ของ 24 และ 36 คือ',['6','12','18','24']],
+['พจน์ที่ 5 ของลำดับเรขาคณิต 2,6,18,... คือ',['54','162','324','486']],
+['ความน่าจะเป็นทอดลูกเต๋าแล้วได้แต้มคู่คือ',['1/6','1/3','1/2','2/3']],
+['√196 เท่ากับเท่าใด',['12','13','14','16']],
+['f(x)=2x+1 แล้ว f(f(3)) เท่ากับเท่าใด',['7','11','15','19']],
+
+['วัตถุความเร่ง 2 m/s² จากหยุดนิ่ง 5 วินาที ได้ระยะทางเท่าใด',['10 m','20 m','25 m','50 m']],
+['แรง 20 N กระทำต่อมวล 4 kg บนพื้นลื่น ความเร่งเท่าใด',['4 m/s²','5 m/s²','16 m/s²','80 m/s²']],
+['มวล 2 kg ตกจากสูง 10 m พลังงานจลน์เมื่อถึงพื้น (g=10) เท่าใด',['20 J','100 J','200 J','400 J']],
+['รถบรรทุก 1000 kg วิ่ง 10 m/s มีโมเมนตัมเท่าใด',['1,000','5,000','10,000','100,000']],
+['ยิงวัตถุมุม 45° กับแนวระดับให้ระยะทางราบสูงสุดใช่หรือไม่',['ใช่','ไม่ใช่','ขึ้นอยู่กับความเร็วต้น','ขึ้นอยู่กับมวล']],
+['ลูกตุ้มยาว 1 m มีคาบประมาณกี่วินาที',['1','2','3','4']],
+['คลื่น f=50 Hz, λ=0.2 m อัตราเร็วเท่าใด',['5','10','250','500']],
+['เสียงเดินทางเร็วที่สุดผ่านตัวกลางใด',['แก๊ส','ของเหลว','ของแข็ง','สุญญากาศ']],
+['รุ้งกินน้ำเกิดจากการหักเหและสะท้อนกลับหมดในหยดน้ำใช่หรือไม่',['ใช่','ไม่ใช่ เลี้ยวเบน','ไม่ใช่ กระเจิง','ผิดทุกข้อ']],
+['ประจุไฟฟ้าสองตัวดูดกัน แสดงว่าประจุมีเครื่องหมายอย่างไร',['เหมือนกัน','ต่างชนิดกัน','เป็นกลางทั้งคู่','ไม่มีข้อถูก']],
+['R=10Ω, I=2A ความต่างศักย์เท่าใด',['5 V','12 V','20 V','200 V']],
+['หลอดไฟ 220V, 0.5A มีกำลังเท่าใด',['110 W','220 W','440 W','550 W']],
+['ลวดมีกระแสในสนามแม่เหล็กเกิดแรงใด',['แรงโน้มถ่วง','แรงแม่เหล็ก/ลอเรนซ์','แรงเสียดทาน','แรงตึงเชือก']],
+['อุณหภูมิแก๊สอุดมคติเพิ่ม พลังงานจลน์เฉลี่ยเป็นอย่างไร',['ลดลง','เท่าเดิม','เพิ่มขึ้น','เป็นศูนย์']],
+['โฟตอนความถี่สูงมีพลังงานตาม E=hf อย่างไร',['มาก','น้อย','คงที่','ไม่มี']],
+['ธาตุกัมมันตรังสีสลายให้รังสีแอลฟา เบตา แกมมา ใช่หรือไม่',['ใช่','ไม่ใช่ แค่แกมมา','ไม่ใช่ แค่เอกซ์','ผิดทุกข้อ']],
+['แรงพยุงตามอาร์คิมิดีสเท่ากับน้ำหนักของสิ่งใด',['วัตถุทั้งหมด','ของเหลวที่ถูกแทนที่','ภาชนะ','อากาศรอบๆ']],
+['แมลงเดินบนผิวน้ำเกี่ยวข้องกับสมบัติใด',['ความหนืด','ความตึงผิว','ความดันไอ','การแพร่']],
+['ความดันใต้ระดับน้ำลึก h ขึ้นกับความหนาแน่นและ g ใช่หรือไม่',['ใช่','ไม่ใช่','พื้นที่ผิวเท่านั้น','ปริมาตรน้ำทั้งหมด']],
+['คานสมดุลต่อการหมุน ผลรวมโมเมนต์ทวนเข็มเท่ากับอะไร',['ศูนย์','ผลรวมโมเมนต์ตามเข็ม','แรงทั้งหมด','งานของคาน']],
+['การชนยืดหยุ่นสมบูรณ์ อนุรักษ์อะไร',['โมเมนตัมอย่างเดียว','พลังงานจลน์อย่างเดียว','ทั้งโมเมนตัมและพลังงานจลน์','ไม่มี']],
+['g ที่ผิวโลกประมาณเท่าใด',['1','5','9.8 หรือ 10','100']],
+['ต่อความต้านทานแบบอนุกรม กระแสแต่ละตัวเป็นอย่างไร',['เท่ากัน','ต่างกันตาม R','ศูนย์','แปรผกผันแรงดัน']],
+['หม้อแปลงขึ้นทำให้แรงดันออกมากกว่าเข้าใช่หรือไม่',['ใช่','ไม่ใช่ ลดลง','เท่าเดิมเสมอ','ขึ้นกับกระแสสลับเท่านั้น']],
+['คลื่นแม่เหล็กไฟฟ้าใดความถี่สูงสุด',['วิทยุ','แสงมองเห็น','อัลตราไวโอเลต','แกมมา']],
+
+['By next year, he _________ from KMUTNB.',['graduate','graduated','will graduate','will have graduated']],
+['Neither the teacher nor the students _________ present yesterday.',['was','were','is','are']],
+['The new bridge _________ next month.',['will build','builds','will be built','is built']],
+['This is the engineering book _________ I bought yesterday.',['who','whom','which','where']],
+['If it rains tomorrow, we _________ cancel the trip.',['will','would','had','would have']],
+['She enjoys _________ physics problems in her free time.',['solve','solving','to solve','solved']],
+['He is interested _________ studying mechatronics engineering.',['at','on','in','with']],
+['This machine is _________ than the old one.',['efficient','more efficient','most efficient','efficiently']],
+['You _________ submit the report by Friday without fail.',['must','can','may','might']],
+['_________ he studied very hard, he passed the exam easily.',['Because','Although','However','Despite']],
+['The _________ news about the factory accident surprised everyone.',['shock','shocked','shocking','shocker']],
+['She wants to be _________ engineer in the future.',['a','an','the','no article']],
+['There are _________ students in the lecture room.',['much','little','many','a little']],
+['John and Mary helped _________ with their homework.',['each other','one another','them','themselves']],
+['Seldom _________ seen such a brilliant invention before.',['I have','have I','did I','I did']],
+['Synonym of Accelerate?',['Slow down','Speed up','Stop','Maintain']],
+['ความแม่นยำ ภาษาอังกฤษคือ',['Accuracy','Accident','Activity','Attitude']],
+['การบำรุงรักษา',['Management','Maintenance','Manufacture','Mechanism']],
+['Innovate เป็นคำชนิดใด',['Noun','Verb','Adjective','Adverb']],
+['Break a leg หมายถึง',['ขาหัก','วิ่งให้เร็ว','ขอให้โชคดี','ยอมแพ้']],
+['Departure ที่สนามบินหมายถึง',['ขาเข้า','ขาออก/การออกเดินทาง','จุดตรวจกระเป๋า','ที่จอดรถ']],
+['Antonym ของ Artificial',['Fake','Natural','Plastic','Modern']],
+['Evaluate แปลว่า',['ประเมินผล','หลีกเลี่ยง','สร้างสรรค์','ทำลาย']],
+['Obstacle หมายถึง',['โอกาส','ทางด่วน','อุปสรรค/สิ่งกีดขวาง','ความสำเร็จ']],
+['Piece of cake หมายถึง',['ของหวานอร่อย','เรื่องง่ายๆ หมูๆ','งานยากมาก','แบ่งปันความสุข']],
+['Flexible หมายถึง',['แข็งกระด้าง','ยืดหยุ่นได้','รวดเร็ว','ปลอดภัย']],
+['Manufacturer หมายถึง',['ผู้จัดการ','ผู้บริโภค','ผู้ผลิต','วิศวกร']],
+['Consequence หมายถึง',['ผลลัพธ์/ผลกระทบ','สาเหตุหลัก','ข้อตกลง','วิธีการ']],
+['Significant ใกล้เคียงกับ',['Small','Important','Temporary','Simple']],
+['Hit the nail on the head หมายถึง',['ตะปูหลุด','เจ็บหัว','พูดหรือทำได้ถูกต้องตรงจุดพอดี','ทุบโต๊ะประท้วง']],
+['She [A] goes to the market yesterday and [C] buy some vegetables. จุดผิดคือ',['A','B','C','D']],
+['If I knew the answer, I would tell you right now. จุดผิดตามเฉลยคือ',['A','B','C','D']],
+['One of the students are absent from class today. จุดผิดคือ',['A','B','C','D']],
+['He is interested in play computer games after school. จุดผิดคือ',['A','B','C','D']],
+['The car which he bought it last week is very expensive. จุดผิดคือ',['A','B','C','D']],
+['She speaks English very fluent during the presentation. จุดผิดคือ',['A','B','C','D']],
+['Mathematics are my favorite subject at school this term. จุดผิดคือ',['A','B','C','D']],
+['They have lived in this city since five years. จุดผิดคือ',['A','B','C','D']],
+['Walking in the rain are not a good idea for your health. จุดผิดคือ',['A','B','C','D']],
+['He asked me where did I put his engineering book. จุดผิดคือ',['A','B','C','D']],
+
+['Main idea: Renewable energy is becoming increasingly important.',['Fossil fuels are best','Renewable energy is becoming more important','Solar power is too expensive','Engineering companies dislike technology']],
+['Which clean source is mentioned?',['Coal','Oil','Solar power','Natural gas']],
+['Why invest in renewable energy?',['Increase emissions','Reduce emissions','Make fossil fuels cheaper','Stop using electricity']],
+['harm closest in meaning to',['Help','Damage','Improve','Protect']],
+['Solar and wind affect environment compared to fossil fuels?',['Harm more','Harm less','Cause pollution','No effect']],
+['The factory needs to ______ production speed.',['decrease','increase','hide','stop']],
+['Safety ______ must be worn at all times in the workshop.',['glasses','clothes','shoes','equipment']],
+['By the time he arrived, the train ______.',['has left','had left','leaves','leaving']],
+['Computers ______ by millions of people every day.',['use','used','are used','were used']],
+['Formal job-application email ending?',['See ya,','Sincerely yours,','Love,','Bye bye,']]
+];
+
+const explanations=[
+"กราฟพาราโบลา x²−4x+3 มีจุดยอดที่ x=2 แทนค่าได้ 4−8+3=−1 ดังนั้นค่าต่ำสุดคือ −1",
+"det(A)=ad−bc=(1×4)−(2×3)=−2 ดังนั้นคำตอบคือ A",
+"แยกตัวประกอบเป็น (x−2)(x+2)/(x−2) แล้วเหลือ x+2 เมื่อ x เข้าใกล้ 2 จึงได้ 4",
+"เป็นลำดับเลขคี่ 1 ถึง 19 มี 10 พจน์ ค่าเฉลี่ยคือ 10 ผลรวม=10×10=100",
+"log₂x=3 หมายถึง 2³=x ดังนั้น x=8",
+"เมทริกซ์เอกลักษณ์ต้องมี 1 บนเส้นทแยงมุมหลัก และ 0 ตำแหน่งอื่น จึงเป็น A",
+"ใช้ความชัน (y−2)/(3−1)=3 จึงได้ y−2=6 และ y=8",
+"อนุพันธ์ของ 3x³ คือ 9x² และของ −5x คือ −5 จึงได้ 9x²−5",
+"sin30°=1/2 และ cos60°=1/2 รวมกันได้ 1",
+"ยูเนียนรวมสมาชิกไม่ซ้ำ: {1,2,3,4,5} มี 5 สมาชิก",
+"24=2³×3 และ 36=2²×3² ตัวประกอบร่วมมากสุดคือ 2²×3=12",
+"ลำดับคูณ 3 ทุกครั้ง: 2,6,18,54,162 ดังนั้นพจน์ที่ 5=162",
+"ลูกเต๋ามี 3 แต้มคู่จาก 6 แต้ม คือ 2,4,6 จึงเป็น 3/6=1/2",
+"√196 คือจำนวนที่คูณตัวเองได้ 196 และ 14×14=196",
+"f(3)=7 แล้ว f(7)=15 จึงได้ 15",
+
+"ใช้ s=ut+½at² โดย u=0, a=2, t=5 ได้ 25 m",
+"ใช้ F=ma ดังนั้น a=20/4=5 m/s²",
+"พลังงานศักย์ mgh=2×10×10=200 J และเมื่อถึงพื้นเปลี่ยนเป็นพลังงานจลน์ 200 J",
+"โมเมนตัม p=mv=1000×10=10,000 kg·m/s",
+"ที่มุม 45° ระยะทางราบของการยิงมุมจะมากสุด เพราะ sin(2θ) มีค่าสูงสุดเมื่อ 2θ=90°",
+"คาบลูกตุ้ม T≈2π√(L/g) เมื่อ L=1 m และ g≈9.8 ได้ประมาณ 2 วินาที",
+"ใช้ v=fλ=50×0.2=10 m/s",
+"อนุภาคในของแข็งอยู่ใกล้กันและส่งแรงสั่นสะเทือนได้ดี จึงส่งเสียงเร็วที่สุด",
+"รุ้งเกิดจากการหักเห การสะท้อนภายใน และการแยกสีของแสงในหยดน้ำ ดังนั้นใช่",
+"ประจุต่างชนิดกัน (+ กับ −) จะเกิดแรงดึงดูดกัน",
+"กฎของโอห์ม V=IR=2×10=20 V",
+"กำลังไฟฟ้า P=VI=220×0.5=110 W",
+"ลวดที่มีกระแสในสนามแม่เหล็กได้รับแรงแม่เหล็ก หรือแรงลอเรนซ์",
+"อุณหภูมิสูงขึ้นหมายถึงพลังงานจลน์เฉลี่ยของอนุภาคมากขึ้น",
+"E=hf เมื่อความถี่ f สูง พลังงานโฟตอน E ก็สูงตาม",
+"การสลายกัมมันตรังสีสามารถให้รังสีแอลฟา เบตา และแกมมาได้",
+"แรงพยุงเท่ากับน้ำหนักของของเหลวที่วัตถุแทนที่ ตามหลักอาร์คิมิดีส",
+"แมลงเดินบนผิวน้ำได้เพราะแรงตึงผิวช่วยพยุงตัว",
+"ความดันของของเหลว P=ρgh จึงขึ้นกับความหนาแน่น ρ, g และความลึก h",
+"วัตถุสมดุลต่อการหมุนต้องมีโมเมนต์ทวนเข็มเท่ากับโมเมนต์ตามเข็ม",
+"การชนยืดหยุ่นสมบูรณ์อนุรักษ์ทั้งโมเมนตัมและพลังงานจลน์",
+"ค่าความเร่งโน้มถ่วงบริเวณผิวโลกประมาณ 9.8 หรือปัดเป็น 10 m/s²",
+"วงจรอนุกรมมีกระแสไหลผ่านอุปกรณ์ทุกตัวเท่ากัน",
+"หม้อแปลงเพิ่มแรงดันทำให้แรงดันด้านออกสูงกว่าด้านเข้า",
+"ในตัวเลือกนี้แกมมามีความถี่สูงสุด",
+
+"By next year เป็นเวลาที่จะเสร็จก่อนจุดหนึ่งในอนาคต จึงใช้ future perfect: will have graduated",
+"Neither...nor ให้กริยาสอดคล้องกับประธานที่อยู่ใกล้ที่สุด คือ students จึงใช้ were",
+"ประธาน bridge เป็นสิ่งที่ถูกสร้าง จึงใช้ passive: will be built",
+"book เป็นสิ่งของที่ถูกซื้อ ใช้ relative pronoun which",
+"If + present simple ใน first conditional คู่กับ will + verb",
+"enjoy ต้องตามด้วย gerund (V-ing) จึงเป็น solving",
+"สำนวน interested in ต้องตามด้วยคำนามหรือ V-ing จึงใช้ in studying",
+"มี than จึงเป็น comparative: more efficient",
+"must ใช้เมื่อเป็นสิ่งที่ต้องทำ/ข้อบังคับ",
+"ความหมายขัดกัน: แม้ว่าเขาจะอ่านหนัก แต่เขาสอบผ่าน จึงใช้ Although",
+"ข่าวเป็นสิ่งที่ทำให้คนตกใจ จึงใช้ shocking news",
+"engineer ออกเสียงขึ้นต้นด้วยเสียงสระ จึงใช้ an",
+"students เป็นคำนามนับได้พหูพจน์ จึงใช้ many",
+"ช่วยเหลือกันระหว่าง John และ Mary ใช้ each other",
+"Seldom ขึ้นต้นประโยคทำให้เกิด inversion: have I seen",
+"Accelerate แปลว่าเร่งให้เร็วขึ้น = Speed up",
+"Accuracy = ความแม่นยำ",
+"Maintenance = การบำรุงรักษา",
+"Innovate เป็นคำกริยา หมายถึงคิดค้น/สร้างสิ่งใหม่",
+"Break a leg เป็นสำนวนที่ใช้กล่าวอวยพรว่าโชคดี",
+"Departure = การออกเดินทาง/ขาออก",
+"Artificial = เทียม ดังนั้นคำตรงข้ามคือ Natural = ธรรมชาติ",
+"Evaluate = ประเมินผล",
+"Obstacle = อุปสรรคหรือสิ่งกีดขวาง",
+"Piece of cake เป็นสำนวนหมายถึงเรื่องง่ายมาก",
+"Flexible = ยืดหยุ่น ปรับเปลี่ยนได้",
+"Manufacturer = ผู้ผลิต",
+"Consequence = ผลลัพธ์หรือผลกระทบที่ตามมา",
+"Significant มีความหมายใกล้กับ Important = สำคัญ",
+"Hit the nail on the head หมายถึงพูดหรือทำได้ตรงจุดพอดี",
+"ประโยคมี yesterday จึงต้องใช้ past tense: went และ bought โดยตามเฉลยที่กำหนด จุด C คือ buy→bought",
+"ข้อนี้ใช้รูปแบบ second conditional ได้อยู่แล้วตามหลักไวยากรณ์ แต่ในชุดเฉลยที่กำหนดให้ตอบ D จึงยึดตามเฉลยของชุดนี้",
+"One of + คำนามพหูพจน์ แต่กริยาต้องตาม one จึงใช้ is ไม่ใช่ are",
+"หลัง interested in ต้องใช้ V-ing จึงเป็น playing",
+"which ทำหน้าที่แทน car แล้ว จึงไม่ต้องมี it ซ้ำ",
+"speaks เป็นกริยา จึงต้องขยายด้วย adverb: fluently ไม่ใช่ adjective fluent",
+"Mathematics เป็นชื่อวิชาและถือเป็นเอกพจน์ จึงใช้ is",
+"since ใช้กับจุดเริ่มต้นของเวลา ส่วน five years เป็นระยะเวลา จึงใช้ for",
+"Walking in the rain เป็น gerund phrase ทำหน้าที่เป็นประธานเอกพจน์ จึงใช้ is",
+"ประโยคคำถามทางอ้อมไม่สลับตำแหน่งประธานกับกริยา จึงเป็น where I put ไม่ใช่ where did I put",
+
+"ใจความหลักบอกว่าพลังงานหมุนเวียนกำลังสำคัญมากขึ้นในสังคมสมัยใหม่",
+"บทความระบุชัดว่า solar และ wind เป็นแหล่งพลังงานสะอาด โดยตัวเลือกคือ Solar power",
+"บริษัทลงทุนในเทคโนโลยีเหล่านี้เพื่อลด carbon emissions",
+"harm มีความหมายใกล้กับ damage = ทำอันตราย/สร้างความเสียหาย",
+"บทความบอกว่า solar และ wind ไม่ทำร้ายสิ่งแวดล้อมมากเท่า fossil fuels จึง harm less",
+"ถ้าต้องเพิ่มความเร็วการผลิตให้ทันความต้องการตลาด ต้อง increase",
+"คำที่ครอบคลุมอุปกรณ์ความปลอดภัยที่ต้องสวมใส่คือ safety equipment",
+"รถไฟออกก่อนที่เขาจะมาถึง จึงใช้ past perfect: had left",
+"Computers เป็นผู้ถูกใช้งาน จึงใช้ passive present: are used",
+"อีเมลสมัครงานแบบเป็นทางการควรลงท้ายด้วย Sincerely yours,"
+];
+
+const form=document.getElementById('quiz');
+let n=0;
+
+for(let s=0;s<sections.length;s++){
+ const h=document.createElement('div');
+ h.className='card';
+ h.innerHTML='<h2>'+sections[s][0]+'</h2>';
+ form.appendChild(h);
+
+ for(let i=0;i<sections[s][1].length;i++){
+  if(s===2&&i===40){
+   const passage=document.createElement('div');
+   passage.className='card';
+   passage.innerHTML='<h3>📖 Reading Passage</h3><p>Renewable energy is becoming increasingly important in modern society. Solar and wind power are clean sources of energy that do not harm the environment as much as fossil fuels. Many engineering companies are now investing in these technologies to reduce carbon emissions.</p><small>อ่านบทความนี้แล้วตอบข้อ 41–45</small>';
+   h.appendChild(passage);
+  }
+
+  const q=questions[n];
+  const d=document.createElement('div');
+  d.className='q';
+  d.dataset.i=n;
+  d.innerHTML='<b>'+ (i+1)+'. '+q[0]+'</b>';
+
+  q[1].forEach((a,j)=>{
+   d.innerHTML+=`<label><input type="radio" name="q${n}" value="${'ABCD'[j]}"> ${'ABCD'[j]}) ${a}</label>`;
+  });
+
+  h.appendChild(d);
+  n++;
+ }
+}
+
+function submitQuiz(){
+ let unanswered=[];
+
+ questions.forEach((q,i)=>{
+  if(!document.querySelector(`input[name=q${i}]:checked`))
+   unanswered.push(i+1);
+ });
+
+ if(unanswered.length){
+  alert('ยังไม่ได้ตอบข้อ: '+unanswered.slice(0,12).join(', ')+(unanswered.length>12?' ...':''));
+  document.querySelector(`.q[data-i="${unanswered[0]-1}"]`).scrollIntoView({
+   behavior:'smooth',
+   block:'center'
+  });
+  return;
+ }
+
+ let score=0;
+ const keys=sections.flatMap(x=>x[1]);
+
+ questions.forEach((q,i)=>{
+  const chosen=document.querySelector(`input[name=q${i}]:checked`).value;
+  const key=keys[i];
+  const box=document.querySelector(`.q[data-i="${i}"]`);
+
+  box.querySelectorAll('label').forEach((l,j)=>{
+   if('ABCD'[j]===key) l.classList.add('correct');
+   if(chosen==='ABCD'[j]&&chosen!==key) l.classList.add('wrong');
+  });
+
+  if(chosen===key) score++;
+
+  let e=document.createElement('div');
+  e.className='explain';
+  e.innerHTML='<b>💡 ทำไม?</b> '+explanations[i]+'<br><b>📌 เฉลย: '+key+'</b>';
+  box.appendChild(e);
+ });
+
+ const r=document.getElementById('result');
+ r.style.display='block';
+ r.innerHTML=`<b>คะแนน: ${score} / ${questions.length}</b>　(${Math.round(score/questions.length*100)}%)<br><small>สีเขียว = คำตอบที่ถูก • สีแดง = คำตอบที่เลือกผิด • แสดงคำอธิบายแล้ว</small>`;
+
+ window.scrollTo({top:0,behavior:'smooth'});
+
+ document.querySelectorAll('input').forEach(x=>x.disabled=true);
+ document.querySelector('button').disabled=true;
+}
+</script></body></html>
